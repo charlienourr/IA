@@ -149,6 +149,49 @@ public class Jeu {
         }
     }
 
+    public void joueprevision(Set<Domino> setcolonne, Set<Domino> setligne) throws CoupIllegal{
+        Domino l=null;
+        int tour;
+        if (it%2 == 0)
+            tour = LIGNE;
+        else
+            tour = COLONNE;
+        if (tour==LIGNE){
+            l= ligne.joue();
+            System.out.println("LIGNE joue ("+l.a.i +","+l.a.j+") -> (" + l.b.i +","+l.b.j+")");
+        }
+        else{
+            l= colonne.joue();
+            System.out.println("COLONNE joue ("+l.a.i +","+l.a.j+") -> (" + l.b.i +","+l.b.j+")");
+        }
+
+        if (legal(l)){
+            if (tour == LIGNE){
+                setligne.add(l);
+                // on indique Ã  colonne quel coup ligne a joue
+                colonne.update(l);
+                ligne.update(l);
+            }
+            else{
+                setcolonne.add(l);
+                ligne.update(l);
+                colonne.update(l);
+            }
+            libre[l.a.i][l.a.j]=false;
+            libre[l.b.i][l.b.j]=false;
+            if (affichageON){
+                affiche();
+            }
+        }
+        else{
+            String coupable;
+            if (tour == LIGNE)
+                coupable = "LIGNE";
+            else
+                coupable = "COLONNE";
+            throw new CoupIllegal("le coup n'est pas legal joueur " + coupable + "!", tour);
+        }
+    }
 
     public void affiche(){
         affichage.repaint();
@@ -293,7 +336,7 @@ public class Jeu {
         int numGames = 1;
 
 
-        Joueur clavier   = new JoueurClavier();
+        Joueur clavier   = new JoueurMinMax(taille);
         Joueur random    = new JoueurAleatoire(taille);
         //Joueur minmax    = new MinMax(taille);
         //Joueur alphabeta = new AlphaBeta(taille);
