@@ -336,10 +336,10 @@ public class Jeu {
         int numGames = 1;
 
 
-        Joueur clavier   = new JoueurMinMax(taille);
-        Joueur random    = new JoueurAleatoire(taille);
-        //Joueur minmax    = new MinMax(taille);
-        //Joueur alphabeta = new AlphaBeta(taille);
+        Joueur clavier   = new JoueurAB(taille);
+        Joueur random    = new JoueurMinMax(taille);
+        //Joueur minmax    = new JoueurMinMax(taille);
+        //Joueur alphabeta = new JoueurAB(taille);
         Jeu g = new Jeu(taille,true);
 
         g.ligne = clavier;

@@ -1,14 +1,14 @@
 package ia.jeux;
 
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.*;
-
-public class JoueurMinMax implements Joueur {
+public class JoueurAB implements Joueur {
     int role;
     boolean libre[][];
     int n;
 
-    public JoueurMinMax(int taille){
+    public JoueurAB(int taille){
         n=taille;
         libre = new boolean[n][n];
         for (int i=0;i<n;i++)
@@ -17,20 +17,26 @@ public class JoueurMinMax implements Joueur {
     }
 
     public Domino joue() {
-
         List<Domino> possibles = possible(role);
+//        for (Domino d:possibles) {
+//            System.out.println(" x="+d.get_a().get_x()+" y="+d.get_a().get_y()+" x1= "+d.get_b().get_x()+" y1="+d.get_b().get_y());
+//        }
         if (possibles.size()==0){
-            System.err.println("Minmax a perdu!");
+            System.err.println("Alpha Beta a perdu!");
         }
 
-        Domino retour=new Domino(new Case(0,0),new Case(0,1));
+        Domino retour=new Domino(new Case(0,0),new Case(0,1));;
         int max=-100;
         int tmp=0;
+        int alpha=-1000;
+        int beta=1000;
         for (Domino d:possibles) {
             libre[d.get_a().get_x()][d.get_a().get_y()]=false;
             libre[d.get_b().get_x()][d.get_b().get_y()]=false;
-            //System.out.println("jouo"+d.get_a().get_x()+" y="+d.get_a().get_y()+" x1= "+d.get_b().get_x()+" y1="+d.get_b().get_y());
-            tmp=minValue(this.role, 3);
+           /* System.out.println("possibles = " + possibles.size());
+            System.out.println("joue role="+role+" x="+d.get_a().get_x()+" y="+d.get_a().get_y()+" x1= "+d.get_b().get_x()+" y1="+d.get_b().get_y());
+            */
+           tmp=minValue(this.role, 3,alpha,beta);
 
             if(tmp>max){
                 max=tmp;
@@ -39,18 +45,12 @@ public class JoueurMinMax implements Joueur {
             libre[d.get_a().get_x()][d.get_a().get_y()]=true;
             libre[d.get_b().get_x()][d.get_b().get_y()]=true;
         }
+        //System.out.println(retour);
         return retour;
     }
 
-    public int minValue(int role, int niveau){
+    public int minValue(int role, int niveau, int alpha, int beta){
         List<Domino> possibles=possible((role+1)%2);
-        /*for (Domino d :possibles) {
-            System.out.println("libere x= "+d.get_a().get_x()+" y="+d.get_a().get_y()+" x1= "+d.get_b().get_x()+" y1="+d.get_b().get_y());
-        }
-        for (Domino d: possible((role))
-             ) {
-            System.out.println("delivre x= "+d.get_a().get_x()+" y="+d.get_a().get_y()+" x1= "+d.get_b().get_x()+" y1="+d.get_b().get_y());
-        }*/
 
         int min=1000;
         int tmp;
@@ -58,11 +58,18 @@ public class JoueurMinMax implements Joueur {
             niveau--;
             libre[d.get_a().get_x()][d.get_a().get_y()]=false;
             libre[d.get_b().get_x()][d.get_b().get_y()]=false;
-            //System.out.println("minmin role="+role+" x= "+d.get_a().get_x()+" y="+d.get_a().get_y()+" x1= "+d.get_b().get_x()+" y1="+d.get_b().get_y());
-            tmp=maxValue((role+1)%2,niveau);
-
+            tmp=maxValue((role+1)%2,niveau,alpha,beta);
             if(tmp<min){
                 min=tmp;
+            }
+            if(min<=alpha){
+                libre[d.get_a().get_x()][d.get_a().get_y()]=true;
+                libre[d.get_b().get_x()][d.get_b().get_y()]=true;
+                niveau++;
+                return min;
+            }
+            if(min<beta){
+                beta=min;
             }
             libre[d.get_a().get_x()][d.get_a().get_y()]=true;
             libre[d.get_b().get_x()][d.get_b().get_y()]=true;
@@ -71,17 +78,9 @@ public class JoueurMinMax implements Joueur {
         return min;
     }
 
-    public int maxValue(int role,int niveau){
+    public int maxValue(int role, int niveau , int alpha, int beta){
         List<Domino> possibles=possible((role+1)%2);
         if(niveau<=0){
-            /*for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    System.out.println(i+" "+j+" est"+libre[i][j]);
-                }
-            }*/
-            /*System.out.println(possibles);
-            System.out.println(possible((role+1)%2));
-            System.out.println("niv"+niveau+" "+possibles.size()+" - "+possible((role+1)%2).size()+"  et "+eval(role));*/
             return possibles.size()-possible(role).size()+eval(role);
         }
         int max=-1000;
@@ -91,17 +90,31 @@ public class JoueurMinMax implements Joueur {
             niveau--;
             libre[d.get_a().get_x()][d.get_a().get_y()]=false;
             libre[d.get_b().get_x()][d.get_b().get_y()]=false;
-            //System.out.println("maxmax role="+role+" x="+d.get_a().get_x()+" y="+d.get_a().get_y()+" x1= "+d.get_b().get_x()+" y1="+d.get_b().get_y());
-            tmp=minValue((role+1)%2,niveau);
+
+            tmp=minValue((role+1)%2,niveau,alpha,beta);
 
             if(tmp>max){
                 max=tmp;
+            }
+            if(max>=beta){
+                libre[d.get_a().get_x()][d.get_a().get_y()]=true;
+                libre[d.get_b().get_x()][d.get_b().get_y()]=true;
+                niveau++;
+                return max;
+            }
+            if(max>alpha){
+                alpha=max;
             }
             libre[d.get_a().get_x()][d.get_a().get_y()]=true;
             libre[d.get_b().get_x()][d.get_b().get_y()]=true;
             niveau++;
         }
         return max;
+    }
+
+    public void update(Domino l) {
+        libre[l.a.i][l.a.j]=false;
+        libre[l.b.i][l.b.j]=false;
     }
 
     public List<Domino> possible(int role){
@@ -137,17 +150,12 @@ public class JoueurMinMax implements Joueur {
         return ret;
     }
 
-    public void update(Domino l) {
-        libre[l.a.i][l.a.j]=false;
-        libre[l.b.i][l.b.j]=false;
-    }
-
     public void setRole(int direction) {
         role = direction;
     }
 
     public String getName() {
-        return "MinMax";
+        return "Alpha Beta";
     }
 
     public void reset() {
