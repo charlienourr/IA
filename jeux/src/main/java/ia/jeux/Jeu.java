@@ -337,7 +337,7 @@ public class Jeu {
 
 
         Joueur clavier   = new JoueurAB(taille);
-        Joueur random    = new JoueurMinMax(taille);
+        Joueur random    = new JoueurClavier();
         //Joueur minmax    = new JoueurMinMax(taille);
         //Joueur alphabeta = new JoueurAB(taille);
         Jeu g = new Jeu(taille,true);

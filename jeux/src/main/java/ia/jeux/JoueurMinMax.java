@@ -82,7 +82,7 @@ public class JoueurMinMax implements Joueur {
             /*System.out.println(possibles);
             System.out.println(possible((role+1)%2));
             System.out.println("niv"+niveau+" "+possibles.size()+" - "+possible((role+1)%2).size()+"  et "+eval(role));*/
-            return possibles.size()-possible(role).size()+eval(role);
+            return possibles.size()-possible(role).size();//+eval(role);
         }
         int max=-1000;
         int tmp;

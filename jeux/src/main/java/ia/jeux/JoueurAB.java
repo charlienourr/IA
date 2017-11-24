@@ -81,7 +81,7 @@ public class JoueurAB implements Joueur {
     public int maxValue(int role, int niveau , int alpha, int beta){
         List<Domino> possibles=possible((role+1)%2);
         if(niveau<=0){
-            return possibles.size()-possible(role).size()+eval(role);
+            return possibles.size()-possible(role).size();//+eval(role);
         }
         int max=-1000;
         int tmp;
