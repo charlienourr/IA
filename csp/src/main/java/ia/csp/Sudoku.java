@@ -207,7 +207,7 @@ public class Sudoku extends BinaryCSP<Digit> {
 
 
     public static void testFull() {
-        List<int[][]> games = Sudoku.getGames("sudokus.txt");
+        List<int[][]> games = Sudoku.getGames("sudokus2.txt");
         List<double[]> results = new ArrayList<double[]>();
         int nb=1;
         for (int[][] g : games) {
